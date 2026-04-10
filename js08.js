@@ -13,7 +13,6 @@
 window.addEventListener("load", playDrawPoker);
 
 function playDrawPoker() {
-   // Reference buttons and images within the Poker Game page
    let dealButton = document.getElementById("dealB");
    let drawButton = document.getElementById("drawB");
    let standButton = document.getElementById("standB");
@@ -37,12 +36,11 @@ function playDrawPoker() {
    
       dealButton.addEventListener("click", function() {
       if (pokerGame.currentBank >= pokerGame.currentBet) {
-         // Enable the Draw and Stand buttons after the initial deal
-         dealButton.disabled = true;        // Turn off the Deal button
-         betSelection.disabled = true;      // Turn off the Bet Selection list
-         drawButton.disabled = false;       // Turn on the Draw button
-         standButton.disabled = false;      // Turn on the Stand Button
-         statusBox.textContent = "";        // Erase any status messages
+         dealButton.disabled = true;       
+         betSelection.disabled = true;     
+         drawButton.disabled = false;      
+         standButton.disabled = false;      
+         statusBox.textContent = "";      
          bankBox.value = pokerGame.placeBet();
 
          if (myDeck.cards.length < 10) {
@@ -64,11 +62,10 @@ function playDrawPoker() {
    
    
    drawButton.addEventListener("click", function() {
-      // Enable the Deal and Bet options when the player chooses to draw new cards
-      dealButton.disabled = false;        // Turn on the Deal button
-      betSelection.disabled = false;      // Turn on the Bet Selection list
-      drawButton.disabled = true;         // Turn off the Draw button
-      standButton.disabled = true;        // Turn off the Stand Button
+      dealButton.disabled = false;        
+      betSelection.disabled = false;     
+      drawButton.disabled = true;       
+      standButton.disabled = true;      
       
 
 
@@ -76,17 +73,16 @@ function playDrawPoker() {
    
     
    standButton.addEventListener("click", function() {
-      // Enable the Deal and Bet options when the player chooses to stand with their hand 
-      dealButton.disabled = false;        // Turn on the Deal button
-      betSelection.disabled = false;      // Turn on the Bet Selection list
-      drawButton.disabled = true;         // Turn off the Draw button
-      standButton.disabled = true;        // Turn off the Stand Button  
+      dealButton.disabled = false;        
+      betSelection.disabled = false;   
+      drawButton.disabled = true;         
+      standButton.disabled = true;         
 
     
    });
    
    
-   // Reload the current page when the Reset button is clicked
+   
    resetButton.addEventListener("click", function() {
       location.reload();
    });

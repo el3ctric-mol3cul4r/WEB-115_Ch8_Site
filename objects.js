@@ -10,89 +10,48 @@
 
       Filename:       objects.js
  */
-      function pokerCard(cardSuit, cardRank) {
-         this.suit = cardSuit;
-         this.rank = cardRank;
-      };
+let pokerGame = {
+   currentBank : null,
+   currentBet : null,
+   placeBet: function() {
+      this.currentBank -= this.currentBet;
+      return this.currentBank;
+   },
+   payBet: function (type) {
+      let pay = 0;
+      switch (type) {
+         case "Royal Flush": pay = 250; break;
+         case "Straight Flush": pay = 50; break;
+         case "Four of a Kind": pay = 25; break;
+         case "Full House": pay = 9; break;
+         case "Flush": pay = 6; break;
+         case "Straight": pay = 4; break;
+         case "Three of a Kind": pay = 3; break;
+         case "Two Pair": pay = 2; break;
+         case "Jacks or Better": pay = 1; break;
+      }
+      this.currentBank += pay*this.currentBet;
+      return this.currentBank;
+   }
+};
 
-      pokerCard.prototype.cardImage = function() {
-         return this.rank + "_" + this.suit + ".png";
-      };
+function pokerCard(cardSuit, cardRank) {
+   this.suit = cardSuit;
+   this.rank = cardRank;
+}
 
-      function pokerDeck() {
-         let suits = ["clubs", "diamonds", "hearts", "spades"];
-         let ranks = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "jack,", "queen", "king", "ace"];
-         this.cards = [];
-         for (let i = 0; i < 4; i++) {
-            for (let j = 0; j < 13; j++) {
-               this.cards.push(new pokerCard(suits[i], ranks[j]));
-            };
-         };
+pokerCard.prototype.cardImage = function() {
+   return this.rank + "_" + this.suit + ".png";
+};
 
-         this.shuffle = function() {
-            this.cards.sort(function() {
-               return 0.5 - Math.random();
-            });
-         };
-      };
+pokerHand.prototype.replaceCard = function (index, pokerDeck) {
+   this.cards[index] = pokerDeck.cards.shift();
+};
 
-      function pokerHand(handLength) {
-         this.cards = new Array(handLength);
-      };
-      
+pokerHand.prototype.getHandValue = function() {
+   return handType(this);
 
-      this.dealTo = function(pokerHand) {
-         let cardsDealt = pokerHand.cards.length;
-         pokerHand.cards = this.cards.splice(0, cardsDealt);
-      };
-
-      let pokerGame = {
-         currentBank: null,
-         currentBet: null,
-         placeBet: function() {
-            this.currentBank -= this.currentBet;
-            return this.currentBank;
-         }
-
-      };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   
-   /* ------------------------------------------------+
-   | The handType() function returns a text string of |
-   | the type of hand held by 5-card poker hand.      |
-   +-------------------------------------------------*/
    function handType(pokerHand) {       
-      /* Determine the rank value of each card in the hand
-         by creating a property named rankValue         */
       for (let i = 0; i < pokerHand.cards.length; i++) {
          if (pokerHand.cards[i].rank === "ace") {
             pokerHand.cards[i].rankValue = 14;
@@ -107,15 +66,12 @@
          }
       }      
       
-      /* Function to return the highest ranked value in a five-card hand */
       function highCard() {
          return Math.max(pokerHand.cards[0].rankValue, pokerHand.cards[1].rankValue,
                          pokerHand.cards[2].rankValue, pokerHand.cards[3].rankValue, 
                          pokerHand.cards[4].rankValue);
       }
       
-      /* Function to test for the presence of a flush in which all
-         five cards have the same suit */
       function hasFlush() {
          let firstSuit = pokerHand.cards[0].suit;   
          return pokerHand.cards.every(function(card) {
@@ -123,8 +79,6 @@
          });
       };   
       
-      /* Function to test for the presence of a straight in which the
-         rank value of the cards can be placed in sequential order */
       function hasStraight() {
          pokerHand.cards.sort(function(a, b) {
             return a.rankValue - b.rankValue;
@@ -138,21 +92,15 @@
          });   
       }; 
       
-      /* Function to test for the presence of a straight flush */
       function hasStraightFlush() {
          return hasFlush() && hasStraight();
       };
 
-      /* Function to test for the presence of a royal flush 
-         which consists of 10-J-Q-K-A of the same suit */
       function hasRoyalFlush() {
          return hasStraightFlush() && highCard() === 14;
       };   
 
-      /* Function to test for the presence of: pairs, two pairs,
-         three of a kind, four of a kind, and full houses  */
       function hasSets() {
-         // handSets creates an associative array of the duplicates in the hand
          let handSets = {};
          pokerHand.cards.forEach(function(card) {
            if (handSets.hasOwnProperty(card.rankValue)) {
@@ -185,7 +133,6 @@
          return sets;   
       }
       
-      // Return a text string describing the hand for draw poker //
       if (hasRoyalFlush()) {return "Royal Flush";}
       else if (hasStraightFlush()) {return "Straight Flush";}
       else if (hasFlush()) {return "Flush";}
@@ -196,6 +143,67 @@
          return sets;
       }   
    }
+};
+
+function pokerDeck() {
+   let suits = ["clubs", "diamonds", "hearts", "spades"];
+   let ranks = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen", "king", "ace"];
+   this.cards = [];
+
+   for (let i = 0; i < 4; i++) {
+      for (let j = 0; j < 13; j++) {
+         this.cards.push(new pokerCard(suits[i], ranks[j]));
+      }
+   }
+
+   this.shuffle = function() {
+      this.cards.sort(function() {
+         return 0.5 - Math.random();
+      });
+   };
+
+   this.dealTo = function(pokerHand) {
+      let cardsDealt = pokerHand.cards.length;
+      pokerHand.cards = this.cards.splice(0, cardsDealt);
+   };
+}
+
+function pokerHand(handlLength) {
+   this.cards = new Array(handlLength);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+   /* ------------------------------------------------+
+   | The handType() function returns a text string of |
+   | the type of hand held by 5-card poker hand.      |
+   +-------------------------------------------------*/
+   
    /* ------------------------------------------------+
    |             End of the  handType() function      |
    +-------------------------------------------------*/   
@@ -206,7 +214,6 @@
  
  
  
-
 
 
 
